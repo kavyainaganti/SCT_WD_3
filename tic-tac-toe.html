@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 2em;
+      background-color: white;
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .cell:hover {
+      background-color: #e0e0e0;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe</h1>
+  <div id="board"></div>
+  <div id="status">X's turn</div>
+  <button onclick="resetGame()">Restart Game</button>
+
+  <script>
+    const boardElement = document.getElementById('board');
+    const statusElement = document.getElementById('status');
+    let board = Array(9).fill(null);
+    let currentPlayer = 'X';
+    let isGameOver = false;
+
+    const winningCombinations = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+      [0, 4, 8], [2, 4, 6]             // diagonals
+    ];
+
+    function createBoard() {
+      boardElement.innerHTML = '';
+      board.forEach((cell, index) => {
+        const cellElement = document.createElement('div');
+        cellElement.className = 'cell';
+        cellElement.textContent = cell;
+        cellElement.addEventListener('click', () => handleCellClick(index));
+        boardElement.appendChild(cellElement);
+      });
+    }
+
+    function handleCellClick(index) {
+      if (board[index] || isGameOver) return;
+      board[index] = currentPlayer;
+      createBoard();
+      if (checkWinner()) {
+        statusElement.textContent = `${currentPlayer} wins!`;
+        isGameOver = true;
+      } else if (board.every(cell => cell)) {
+        statusElement.textContent = "It's a draw!";
+        isGameOver = true;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        statusElement.textContent = `${currentPlayer}'s turn`;
+      }
+    }
+
+    function checkWinner() {
+      return winningCombinations.some(combo => {
+        const [a, b, c] = combo;
+        return board[a] && board[a] === board[b] && board[b] === board[c];
+      });
+    }
+
+    function resetGame() {
+      board = Array(9).fill(null);
+      currentPlayer = 'X';
+      isGameOver = false;
+      statusElement.textContent = "X's turn";
+      createBoard();
+    }
+
+    // Initialize board on load
+    resetGame();
+  </script>
+</body>
+</html>
